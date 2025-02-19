@@ -2,43 +2,41 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 
 class ExternalPath {
-  static const MethodChannel _channel = const MethodChannel('external_path');
+  static const _channel = MethodChannel('external_path');
 
-  static final String DIRECTORY_MUSIC = "Music";
-  static final String DIRECTORY_PODCASTS = "Podcasts";
-  static final String DIRECTORY_RINGTONES = "Ringtones";
-  static final String DIRECTORY_ALARMS = "Alarms";
-  static final String DIRECTORY_NOTIFICATIONS = "Notifications";
-  static final String DIRECTORY_PICTURES = "Pictures";
-  static final String DIRECTORY_MOVIES = "Movies";
-  static final String DIRECTORY_DOWNLOADS = "Download";
-  static final String DIRECTORY_DCIM = "DCIM";
-  static final String DIRECTORY_DOCUMENTS = "Documents";
-  static final String DIRECTORY_SCREENSHOTS = "Screenshots";
-  static final String DIRECTORY_AUDIOBOOKS = "Audiobooks";
+  // Using const instead of final for truly constant values
+  static const String DIRECTORY_MUSIC = "Music";
+  static const String DIRECTORY_PODCASTS = "Podcasts";
+  static const String DIRECTORY_RINGTONES = "Ringtones";
+  static const String DIRECTORY_ALARMS = "Alarms";
+  static const String DIRECTORY_NOTIFICATIONS = "Notifications";
+  static const String DIRECTORY_PICTURES = "Pictures";
+  static const String DIRECTORY_MOVIES = "Movies";
+  static const String DIRECTORY_DOWNLOADS = "Download";
+  static const String DIRECTORY_DCIM = "DCIM";
+  static const String DIRECTORY_DOCUMENTS = "Documents";
+  static const String DIRECTORY_SCREENSHOTS = "Screenshots";
+  static const String DIRECTORY_AUDIOBOOKS = "Audiobooks";
 
+  /// Returns a list of external storage directory paths
   static Future<List<String>> getExternalStorageDirectories() async {
-    final List externalStorageDirs =
+    final List storageInfo =
         await _channel.invokeMethod('getExternalStorageDirectories');
 
-    List<String> storageInfos = externalStorageDirs
-        .map((storageInfoMap) => ExStoragePath01.getRootDir(storageInfoMap))
-        .toList();
-    return storageInfos;
+    // More efficient approach that does the same operation
+    return storageInfo.map<String>((dir) => _getRootDir(dir)).toList();
   }
 
+  /// Returns the path to a public external storage directory of the given type
   static Future<String> getExternalStoragePublicDirectory(String type) async {
-    final String externalPublicDir = await _channel
+    return await _channel
         .invokeMethod('getExternalStoragePublicDirectory', {'type': type});
-    return externalPublicDir;
   }
-}
 
-class ExStoragePath01 {
-  static String getRootDir(String appFilesDir) {
-    return appFilesDir
-        .split("/")
-        .sublist(0, appFilesDir.split("/").length - 4)
-        .join("/");
+  // Move helper method inside the class for better encapsulation
+  // Made private as it's an implementation detail
+  static String _getRootDir(String path) {
+    final parts = path.split("/");
+    return parts.sublist(0, parts.length - 4).join("/");
   }
 }

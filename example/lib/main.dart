@@ -42,7 +42,8 @@ class _MyAppState extends State<MyApp> {
     String path;
 
     path = await ExternalPath.getExternalStoragePublicDirectory(
-        ExternalPath.DIRECTORY_DOWNLOADS);
+      ExternalPath.DIRECTORY_DOWNLOADS,
+    );
 
     setState(() {
       print(path); // /storage/emulated/0/Download
@@ -57,10 +58,11 @@ class _MyAppState extends State<MyApp> {
         title: const Text('Plugin example app'),
       ),
       body: ListView.builder(
-          itemCount: _exPath.length,
-          itemBuilder: (context, index) {
-            return Center(child: Text("${_exPath[index]}"));
-          }),
+        itemCount: _exPath.length,
+        itemBuilder: (context, index) {
+          return Center(child: Text("${_exPath[index]}"));
+        },
+      ),
     ));
   }
 }
